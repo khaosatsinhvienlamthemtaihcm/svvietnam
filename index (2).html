@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thiệp 20/10 🌸</title>
+<style>
+:root{--bg1:#ffe3ec;--bg2:#ffc2d6;--card:#fffafc;--ink:#7a2142;--soft:#b0577c;--accent:#e8517f;--env:#f48fb1;--env2:#f8a9c4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#2a1220;--bg2:#4a1d38;--card:#3a1a2e;--ink:#ffd9e6;--soft:#f3a6c3;--env:#b23b6a;--env2:#c9507f}}
+:root[data-theme="dark"]{--bg1:#2a1220;--bg2:#4a1d38;--card:#3a1a2e;--ink:#ffd9e6;--soft:#f3a6c3;--env:#b23b6a;--env2:#c9507f}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
+background:linear-gradient(160deg,var(--bg1),var(--bg2));font-family:"Quicksand","Segoe UI",system-ui,sans-serif;color:var(--ink)}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:5}
+.stage{position:relative;width:min(92vw,360px);height:min(86vh,560px);display:flex;align-items:center;justify-content:center}
+.hint{position:absolute;bottom:-4px;width:100%;text-align:center;font-size:15px;color:var(--soft);animation:pulse 1.6s infinite}
+.open .hint{display:none}
+@keyframes pulse{50%{opacity:.4}}
+.env{position:absolute;width:100%;height:230px;bottom:70px;cursor:pointer;transition:transform .8s .4s,opacity .6s 1s}
+.env .body{position:absolute;inset:0;background:var(--env);border-radius:10px;box-shadow:0 14px 30px rgba(180,40,90,.3);z-index:3;
+clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%)}
+.env .back{position:absolute;inset:0;background:var(--env2);border-radius:10px;z-index:1}
+.flap{position:absolute;top:0;left:0;width:100%;height:120px;background:var(--env2);transform-origin:top;z-index:4;
+clip-path:polygon(0 0,100% 0,50% 100%);transition:transform .6s;filter:brightness(.95)}
+.seal{position:absolute;left:50%;top:92px;transform:translateX(-50%);font-size:34px;z-index:5;transition:opacity .3s}
+.open .flap{transform:rotateX(180deg);z-index:0}
+.open .seal{opacity:0}
+.open .env{transform:translateY(160px);opacity:0;pointer-events:none}
+.card{position:absolute;width:100%;padding:28px 22px 22px;background:var(--card);border-radius:20px;text-align:center;
+box-shadow:0 20px 50px rgba(180,40,90,.35);z-index:2;opacity:0;transform:translateY(120px) scale(.8);transition:all .9s .3s cubic-bezier(.2,1.2,.4,1);pointer-events:none}
+.open .card{opacity:1;transform:none;pointer-events:auto;z-index:6}
+.flower{font-size:56px;line-height:1;animation:sway 3s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(8deg) scale(1.08)}}
+h1{font-family:"Dancing Script","Brush Script MT",cursive;font-size:38px;margin:10px 0 2px;color:var(--accent)}
+.date{letter-spacing:4px;font-weight:700;font-size:13px;color:var(--soft)}
+.to{margin:18px 0 8px;font-size:18px;font-weight:700}
+.msg{min-height:110px;font-size:16px;line-height:1.55;display:flex;align-items:center;justify-content:center;transition:opacity .3s}
+.btns{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+button{border:0;border-radius:999px;padding:11px 20px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;box-shadow:0 6px 14px rgba(232,81,127,.35)}
+button.alt{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+button:active{transform:scale(.96)}
+.from:empty{display:none}
+.from{margin-top:18px;font-family:"Dancing Script","Brush Script MT",cursive;font-size:24px;color:var(--soft)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="stage" id="stage">
+  <div class="env" id="env"><div class="back"></div><div class="body"></div><div class="flap"></div><div class="seal">💌</div></div>
+  <div class="hint">Chạm vào phong thư nhé 💗</div>
+  <div class="card">
+    <div class="flower">🌷</div>
+    <h1>Chúc mừng 20/10</h1>
+    <div class="date">NGÀY PHỤ NỮ VIỆT NAM</div>
+    <div class="to">Gửi <span id="to">Mai Hân</span> 💕</div>
+    <div class="msg" id="msg"></div>
+    <div class="btns">
+      <button id="more">Thêm lời chúc 🌸</button>
+      <button class="alt" id="boom">Tung hoa 🎉</button>
+    </div>
+    <div class="from" id="from"></div>
+  </div>
+</div>
+<script>
+// Đổi tên bằng link: ?to=Lan&from=Minh  (hoặc sửa trực tiếp 2 dòng dưới)
+var q=new URLSearchParams(location.search);
+var TO=q.get("to")||"Mai Hân", FROM=q.get("from")||"";
+document.getElementById("to").textContent=TO;
+if(FROM)document.getElementById("from").textContent="— "+FROM;
+
+var wishes=[
+"Chúc bạn luôn rạng rỡ như hôm nay, mỗi ngày đều có thật nhiều lý do để mỉm cười. 🌷",
+"Cảm ơn bạn vì đã xuất hiện và làm cho những ngày bình thường trở nên đặc biệt hơn. ✨",
+"Mong bạn luôn được yêu thương, được lắng nghe và được làm điều mình thích. 💖",
+"Chúc bạn xinh đẹp, bình an, và mọi dự định đều thuận lợi. Có gì vui nhớ kể mình nghe nhé! 🌸",
+"20/10 này, mình chỉ ước một điều: nụ cười của bạn sẽ ở lại thật lâu. 😊",
+"Bạn không cần hoàn hảo, vì bạn vốn đã rất đáng yêu rồi. 💐"
+];
+var i=0,msg=document.getElementById("msg");
+function show(n){msg.style.opacity=0;setTimeout(function(){msg.textContent=wishes[n];msg.style.opacity=1},250)}
+show(0);
+document.getElementById("more").onclick=function(){i=(i+1)%wishes.length;show(i)};
+
+var stage=document.getElementById("stage");
+document.getElementById("env").onclick=function(){stage.classList.add("open");burst(40)};
+
+var cv=document.getElementById("c"),cx=cv.getContext("2d"),W,H,P=[],E=["🌸","🌷","💗","🌺","✨"];
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener("resize",rs);
+function mk(y,vy){return{x:Math.random()*W,y:y,s:14+Math.random()*16,vy:vy||.6+Math.random()*1.2,vx:(Math.random()-.5)*.8,r:Math.random()*6,vr:(Math.random()-.5)*.05,e:E[Math.random()*E.length|0]}}
+for(var k=0;k<22;k++)P.push(mk(Math.random()*H));
+function burst(n){for(var k=0;k<n;k++)P.push(mk(-20-Math.random()*H*.5,2+Math.random()*2.5))}
+document.getElementById("boom").onclick=function(){burst(60)};
+function loop(){cx.clearRect(0,0,W,H);
+for(var k=P.length-1;k>=0;k--){var p=P[k];p.y+=p.vy;p.x+=p.vx+Math.sin(p.y/40)*.5;p.r+=p.vr;
+if(p.y>H+30){if(k<22){p.y=-30;p.x=Math.random()*W}else P.splice(k,1);continue}
+cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.font=p.s+"px serif";cx.fillText(p.e,0,0);cx.restore()}
+requestAnimationFrame(loop)}
+loop();
+</script>
+</body>
+</html>
