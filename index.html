@@ -86,16 +86,16 @@ document.getElementById("more").onclick=function(){i=(i+1)%wishes.length;show(i)
 var stage=document.getElementById("stage");
 document.getElementById("env").onclick=function(){stage.classList.add("open");burst(40)};
 
-var cv=document.getElementById("c"),cx=cv.getContext("2d"),W,H,P=[],E=["🌸","🌷","💗","🌺","✨"];
+var cv=document.getElementById("c"),cx=cv.getContext("2d"),W,H,P=[],E=["🌸","🌷","💗","🌺","✨"],S=E.map(function(e){var c=document.createElement("canvas");c.width=c.height=48;var x=c.getContext("2d");x.font="36px serif";x.textBaseline="middle";x.textAlign="center";x.fillText(e,24,26);return c});
 function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener("resize",rs);
-function mk(y,vy){return{x:Math.random()*W,y:y,s:14+Math.random()*16,vy:vy||.6+Math.random()*1.2,vx:(Math.random()-.5)*.8,r:Math.random()*6,vr:(Math.random()-.5)*.05,e:E[Math.random()*E.length|0]}}
-for(var k=0;k<22;k++)P.push(mk(Math.random()*H));
-function burst(n){for(var k=0;k<n;k++)P.push(mk(-20-Math.random()*H*.5,2+Math.random()*2.5))}
+function mk(y,vy){return{x:Math.random()*W,y:y,s:14+Math.random()*16,vy:vy||.6+Math.random()*1.2,vx:(Math.random()-.5)*.8,r:Math.random()*6,vr:(Math.random()-.5)*.05,e:S[Math.random()*S.length|0]}}
+for(var k=0;k<12;k++)P.push(mk(Math.random()*H));
+function burst(n){n=Math.min(n,25);for(var k=0;k<n&&P.length<60;k++)P.push(mk(-20-Math.random()*H*.5,2+Math.random()*2.5))}
 document.getElementById("boom").onclick=function(){burst(60)};
 function loop(){cx.clearRect(0,0,W,H);
 for(var k=P.length-1;k>=0;k--){var p=P[k];p.y+=p.vy;p.x+=p.vx+Math.sin(p.y/40)*.5;p.r+=p.vr;
-if(p.y>H+30){if(k<22){p.y=-30;p.x=Math.random()*W}else P.splice(k,1);continue}
-cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.font=p.s+"px serif";cx.fillText(p.e,0,0);cx.restore()}
+if(p.y>H+30){if(k<12){p.y=-30;p.x=Math.random()*W}else P.splice(k,1);continue}
+cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.drawImage(p.e,-p.s/2,-p.s/2,p.s,p.s);cx.restore()}
 requestAnimationFrame(loop)}
 loop();
 </script>
