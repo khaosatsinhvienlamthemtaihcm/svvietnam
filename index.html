@@ -58,7 +58,7 @@ padding:calc(env(safe-area-inset-top,0px) + 16px) 14px calc(env(safe-area-inset-
 #sv .head p{margin:0;font-size:14.5px;line-height:1.55;color:#55607a}
 #sv .bar{height:6px;background:#dbe3f3;border-radius:99px;margin:14px 2px;overflow:hidden}
 #sv .bar i{display:block;height:100%;width:0;background:#2f6fed;transition:width .35s}
-#sv .qc{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(30,50,100,.1)}
+#sv .qbox{min-height:120px;background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(30,50,100,.1)}
 #sv .qn{font-size:13px;color:#7a86a3;margin-bottom:6px;font-weight:700}
 #sv .qt{font-size:18px;font-weight:700;line-height:1.4;margin-bottom:14px}
 #sv .opt{display:block;width:100%;text-align:left;margin:0 0 9px;padding:13px 15px;border-radius:11px;background:#f6f8fd;color:#1f2a44;
@@ -84,7 +84,7 @@ font:inherit;font-weight:500;font-size:15.5px;box-shadow:inset 0 0 0 1.5px #d5dd
   <div class="head"><h2>Khảo sát việc làm thêm của sinh viên TP.HCM</h2>
   <p>Chào bạn! Khảo sát nhỏ này tìm hiểu tình hình đi làm thêm của sinh viên tại TP.HCM. Chỉ mất khoảng 1 phút, mong bạn trả lời thật lòng nhé. Cảm ơn bạn rất nhiều!</p></div>
   <div class="bar"><i id="pb"></i></div>
-  <div class="qc" id="qc"></div>
+  <div class="qbox" id="qbox" style="display:block;min-height:140px;background:#fff;border-radius:14px;padding:20px;color:#1f2a44">Đang tải câu hỏi...</div>
   <div class="ft">Khảo sát sinh viên TP.HCM · Cảm ơn bạn đã tham gia</div>
 </div></div>
 <canvas id="c"></canvas>
@@ -105,6 +105,42 @@ font:inherit;font-weight:500;font-size:15.5px;box-shadow:inset 0 0 0 1.5px #d5dd
   </div>
 </div>
 <script>
+try{
+(function(){
+var Q=[
+{q:"Bạn đang là sinh viên năm mấy?",o:["Năm 1","Năm 2","Năm 3","Năm 4","Năm 5 trở lên"]},
+{q:"Hiện tại bạn có đi làm thêm không?",o:["Có, làm thường xuyên","Thỉnh thoảng mới làm","Chưa làm, đang tìm việc","Không có nhu cầu"]},
+{q:"Bạn làm thêm (hoặc muốn làm thêm) ở lĩnh vực nào?",o:["Nhà hàng, quán cà phê, trà sữa","Bán hàng, siêu thị, cửa hàng","Gia sư, dạy kèm","Công việc online, freelance","Thực tập, làm văn phòng"]},
+{q:"Thu nhập mỗi tháng từ việc làm thêm của bạn khoảng bao nhiêu?",o:["Dưới 2 triệu","Từ 2 đến 4 triệu","Từ 4 đến 7 triệu","Trên 7 triệu"]},
+{q:"Mỗi tuần bạn dành bao nhiêu giờ cho việc làm thêm?",o:["Dưới 10 giờ","Từ 10 đến 20 giờ","Từ 20 đến 30 giờ","Trên 30 giờ"]},
+{q:"Khó khăn lớn nhất của bạn khi tìm việc làm thêm là gì?",o:["Thiếu kinh nghiệm","Lịch học khó sắp xếp","Mức lương thấp","Lo gặp việc không uy tín","Không biết tìm ở đâu"]},
+{q:"Bạn hài lòng thế nào với công việc làm thêm hiện tại?",stars:true}
+];
+var s=0,ans=[],qc=document.getElementById("qbox"),pb=document.getElementById("pb");
+function render(){
+var q=Q[s],h='<div class="qn">Câu '+(s+1)+' / '+Q.length+'</div><div class="qt">'+q.q+'</div>';
+if(q.stars){h+='<div class="stars">';for(var i=1;i<=5;i++)h+='<span data-v="'+i+'">★</span>';h+='</div>'}
+else q.o.forEach(function(t,i){h+='<button class="opt" data-v="'+i+'">'+t+'</button>'});
+h+='<div class="nav">'+(s?'<button class="bk" id="bk">Quay lại</button>':'')+'<button class="nx" id="nx" disabled>'+(s==Q.length-1?'Gửi khảo sát':'Tiếp tục')+'</button></div>';
+qc.innerHTML=h;pb.style.width=(s/Q.length*100)+"%";
+var nx=document.getElementById("nx");
+function sel(v){ans[s]=v;nx.disabled=false}
+if(ans[s]!=null){nx.disabled=false}
+[].forEach.call(qc.querySelectorAll(".opt"),function(b){if(ans[s]==b.dataset.v)b.classList.add("on");
+b.onclick=function(){[].forEach.call(qc.querySelectorAll(".opt"),function(x){x.classList.remove("on")});b.classList.add("on");sel(b.dataset.v)}});
+var st=[].slice.call(qc.querySelectorAll(".stars span"));
+function paint(v){st.forEach(function(x,i){x.classList.toggle("on",i<v)})}
+if(ans[s]!=null&&Q[s].stars)paint(+ans[s]);
+st.forEach(function(x){x.onclick=function(){paint(+x.dataset.v);sel(x.dataset.v)}});
+var bk=document.getElementById("bk");if(bk)bk.onclick=function(){s--;render()};
+nx.onclick=function(){if(s<Q.length-1){s++;render()}else send()}}
+function send(){pb.style.width="100%";qc.innerHTML='<div class="wait"><div class="sp"></div>Đang gửi câu trả lời của bạn...</div>';
+setTimeout(function(){var o=document.getElementById("sv");o.classList.add("out");setTimeout(function(){o.style.display="none"},750)},1700)}
+try{render()}catch(e){qc.textContent="Lỗi: "+e.message;console.error(e)}})();
+}catch(e){var _q=document.getElementById("qbox");if(_q)_q.textContent="Lỗi: "+e.message;console.error(e)}
+</script>
+<script>
+try{
 // Đổi tên bằng link: ?to=Lan&from=Minh  (hoặc sửa trực tiếp 2 dòng dưới)
 var q=new URLSearchParams(location.search);
 var TO=q.get("to")||"Mai Hân", FROM=q.get("from")||"";
@@ -138,39 +174,8 @@ if(p.y>H+30){if(k<12){p.y=-30;p.x=Math.random()*W}else P.splice(k,1);continue}
 cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.drawImage(p.e,-p.s/2,-p.s/2,p.s,p.s);cx.restore()}
 requestAnimationFrame(loop)}
 loop();
+}catch(e){console.error(e)}
 </script>
-<script>
-(function(){
-var Q=[
-{q:"Bạn đang là sinh viên năm mấy?",o:["Năm 1","Năm 2","Năm 3","Năm 4","Năm 5 trở lên"]},
-{q:"Hiện tại bạn có đi làm thêm không?",o:["Có, làm thường xuyên","Thỉnh thoảng mới làm","Chưa làm, đang tìm việc","Không có nhu cầu"]},
-{q:"Bạn làm thêm (hoặc muốn làm thêm) ở lĩnh vực nào?",o:["Nhà hàng, quán cà phê, trà sữa","Bán hàng, siêu thị, cửa hàng","Gia sư, dạy kèm","Công việc online, freelance","Thực tập, làm văn phòng"]},
-{q:"Thu nhập mỗi tháng từ việc làm thêm của bạn khoảng bao nhiêu?",o:["Dưới 2 triệu","Từ 2 đến 4 triệu","Từ 4 đến 7 triệu","Trên 7 triệu"]},
-{q:"Mỗi tuần bạn dành bao nhiêu giờ cho việc làm thêm?",o:["Dưới 10 giờ","Từ 10 đến 20 giờ","Từ 20 đến 30 giờ","Trên 30 giờ"]},
-{q:"Khó khăn lớn nhất của bạn khi tìm việc làm thêm là gì?",o:["Thiếu kinh nghiệm","Lịch học khó sắp xếp","Mức lương thấp","Lo gặp việc không uy tín","Không biết tìm ở đâu"]},
-{q:"Bạn hài lòng thế nào với công việc làm thêm hiện tại?",stars:true}
-];
-var s=0,ans=[],qc=document.getElementById("qc"),pb=document.getElementById("pb");
-function render(){
-var q=Q[s],h='<div class="qn">Câu '+(s+1)+' / '+Q.length+'</div><div class="qt">'+q.q+'</div>';
-if(q.stars){h+='<div class="stars">';for(var i=1;i<=5;i++)h+='<span data-v="'+i+'">★</span>';h+='</div>'}
-else q.o.forEach(function(t,i){h+='<button class="opt" data-v="'+i+'">'+t+'</button>'});
-h+='<div class="nav">'+(s?'<button class="bk" id="bk">Quay lại</button>':'')+'<button class="nx" id="nx" disabled>'+(s==Q.length-1?'Gửi khảo sát':'Tiếp tục')+'</button></div>';
-qc.innerHTML=h;pb.style.width=(s/Q.length*100)+"%";
-var nx=document.getElementById("nx");
-function sel(v){ans[s]=v;nx.disabled=false}
-if(ans[s]!=null){nx.disabled=false}
-[].forEach.call(qc.querySelectorAll(".opt"),function(b){if(ans[s]==b.dataset.v)b.classList.add("on");
-b.onclick=function(){[].forEach.call(qc.querySelectorAll(".opt"),function(x){x.classList.remove("on")});b.classList.add("on");sel(b.dataset.v)}});
-var st=[].slice.call(qc.querySelectorAll(".stars span"));
-function paint(v){st.forEach(function(x,i){x.classList.toggle("on",i<v)})}
-if(ans[s]!=null&&Q[s].stars)paint(+ans[s]);
-st.forEach(function(x){x.onclick=function(){paint(+x.dataset.v);sel(x.dataset.v)}});
-var bk=document.getElementById("bk");if(bk)bk.onclick=function(){s--;render()};
-nx.onclick=function(){if(s<Q.length-1){s++;render()}else send()}}
-function send(){pb.style.width="100%";qc.innerHTML='<div class="wait"><div class="sp"></div>Đang gửi câu trả lời của bạn...</div>';
-setTimeout(function(){var o=document.getElementById("sv");o.classList.add("out");setTimeout(function(){o.style.display="none"},750)},1700)}
-render()})();
-</script>
+
 </body>
 </html>
