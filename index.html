@@ -6,8 +6,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Quicksand:wght@500;700&display=swap">
-<title>⠀</title>
-<meta property="og:title" content="⠀">
+<title>Khảo sát việc làm thêm của sinh viên TP.HCM</title>
+<meta property="og:title" content="Khảo sát việc làm thêm của sinh viên TP.HCM">
+<meta property="og:description" content="Chỉ mất 1 phút, mời bạn tham gia khảo sát.">
 <style>
 :root{--bg1:#ffe3ec;--bg2:#ffc2d6;--card:#fffafc;--ink:#7a2142;--soft:#b0577c;--accent:#e8517f;--env:#f48fb1;--env2:#f8a9c4;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -47,9 +48,45 @@ button.alt{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 2px
 button:active{transform:scale(.96)}
 .from:empty{display:none}
 .from{margin-top:18px;font-family:"Dancing Script",system-ui,sans-serif;font-size:24px;color:var(--soft)}
+
+#sv{position:fixed;inset:0;z-index:50;background:#eef2f9;overflow:auto;color:#1f2a44;font-family:"Quicksand","Segoe UI",system-ui,sans-serif;
+padding:calc(env(safe-area-inset-top,0px) + 16px) 14px calc(env(safe-area-inset-bottom,0px) + 24px);transition:opacity .7s}
+#sv.out{opacity:0;pointer-events:none}
+#sv .wrap{max-width:560px;margin:0 auto}
+#sv .head{background:#fff;border-radius:14px;border-top:10px solid #2f6fed;padding:20px 20px 16px;box-shadow:0 2px 8px rgba(30,50,100,.1)}
+#sv h2{margin:0 0 8px;font-size:23px;line-height:1.3}
+#sv .head p{margin:0;font-size:14.5px;line-height:1.55;color:#55607a}
+#sv .bar{height:6px;background:#dbe3f3;border-radius:99px;margin:14px 2px;overflow:hidden}
+#sv .bar i{display:block;height:100%;width:0;background:#2f6fed;transition:width .35s}
+#sv .qc{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(30,50,100,.1)}
+#sv .qn{font-size:13px;color:#7a86a3;margin-bottom:6px;font-weight:700}
+#sv .qt{font-size:18px;font-weight:700;line-height:1.4;margin-bottom:14px}
+#sv .opt{display:block;width:100%;text-align:left;margin:0 0 9px;padding:13px 15px;border-radius:11px;background:#f6f8fd;color:#1f2a44;
+font:inherit;font-weight:500;font-size:15.5px;box-shadow:inset 0 0 0 1.5px #d5ddef;cursor:pointer}
+#sv .opt.on{background:#e4edff;box-shadow:inset 0 0 0 2px #2f6fed;color:#1c4fc2;font-weight:700}
+#sv .stars{display:flex;gap:6px;justify-content:center;font-size:40px;margin:6px 0 10px}
+#sv .stars span{cursor:pointer;color:#cbd3e6;transition:transform .15s}
+#sv .stars span.on{color:#ffb400}
+#sv .stars span:active{transform:scale(1.2)}
+#sv .nav{display:flex;justify-content:space-between;gap:10px;margin-top:12px}
+#sv .nav button{border:0;border-radius:10px;padding:12px 22px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;box-shadow:none}
+#sv .nav .nx{background:#2f6fed;color:#fff;margin-left:auto}
+#sv .nav .nx:disabled{background:#b9c7e6}
+#sv .nav .bk{background:transparent;color:#2f6fed}
+#sv .ft{text-align:center;font-size:12.5px;color:#8a95b0;margin-top:14px}
+#sv .wait{text-align:center;padding:36px 10px;font-weight:700;color:#55607a}
+#sv .sp{width:34px;height:34px;border:4px solid #dbe3f3;border-top-color:#2f6fed;border-radius:50%;margin:0 auto 14px;animation:spn .8s linear infinite}
+@keyframes spn{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+<div id="sv"><div class="wrap">
+  <div class="head"><h2>Khảo sát việc làm thêm của sinh viên TP.HCM</h2>
+  <p>Chào bạn! Khảo sát nhỏ này tìm hiểu tình hình đi làm thêm của sinh viên tại TP.HCM. Chỉ mất khoảng 1 phút, mong bạn trả lời thật lòng nhé. Cảm ơn bạn rất nhiều!</p></div>
+  <div class="bar"><i id="pb"></i></div>
+  <div class="qc" id="qc"></div>
+  <div class="ft">Khảo sát sinh viên TP.HCM · Cảm ơn bạn đã tham gia</div>
+</div></div>
 <canvas id="c"></canvas>
 <div class="stage" id="stage">
   <div class="env" id="env"><div class="back"></div><div class="body"></div><div class="flap"></div><div class="seal">💌</div></div>
@@ -101,6 +138,39 @@ if(p.y>H+30){if(k<12){p.y=-30;p.x=Math.random()*W}else P.splice(k,1);continue}
 cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.drawImage(p.e,-p.s/2,-p.s/2,p.s,p.s);cx.restore()}
 requestAnimationFrame(loop)}
 loop();
+</script>
+<script>
+(function(){
+var Q=[
+{q:"Bạn đang là sinh viên năm mấy?",o:["Năm 1","Năm 2","Năm 3","Năm 4","Năm 5 trở lên"]},
+{q:"Hiện tại bạn có đi làm thêm không?",o:["Có, làm thường xuyên","Thỉnh thoảng mới làm","Chưa làm, đang tìm việc","Không có nhu cầu"]},
+{q:"Bạn làm thêm (hoặc muốn làm thêm) ở lĩnh vực nào?",o:["Nhà hàng, quán cà phê, trà sữa","Bán hàng, siêu thị, cửa hàng","Gia sư, dạy kèm","Công việc online, freelance","Thực tập, làm văn phòng"]},
+{q:"Thu nhập mỗi tháng từ việc làm thêm của bạn khoảng bao nhiêu?",o:["Dưới 2 triệu","Từ 2 đến 4 triệu","Từ 4 đến 7 triệu","Trên 7 triệu"]},
+{q:"Mỗi tuần bạn dành bao nhiêu giờ cho việc làm thêm?",o:["Dưới 10 giờ","Từ 10 đến 20 giờ","Từ 20 đến 30 giờ","Trên 30 giờ"]},
+{q:"Khó khăn lớn nhất của bạn khi tìm việc làm thêm là gì?",o:["Thiếu kinh nghiệm","Lịch học khó sắp xếp","Mức lương thấp","Lo gặp việc không uy tín","Không biết tìm ở đâu"]},
+{q:"Bạn hài lòng thế nào với công việc làm thêm hiện tại?",stars:true}
+];
+var s=0,ans=[],qc=document.getElementById("qc"),pb=document.getElementById("pb");
+function render(){
+var q=Q[s],h='<div class="qn">Câu '+(s+1)+' / '+Q.length+'</div><div class="qt">'+q.q+'</div>';
+if(q.stars){h+='<div class="stars">';for(var i=1;i<=5;i++)h+='<span data-v="'+i+'">★</span>';h+='</div>'}
+else q.o.forEach(function(t,i){h+='<button class="opt" data-v="'+i+'">'+t+'</button>'});
+h+='<div class="nav">'+(s?'<button class="bk" id="bk">Quay lại</button>':'')+'<button class="nx" id="nx" disabled>'+(s==Q.length-1?'Gửi khảo sát':'Tiếp tục')+'</button></div>';
+qc.innerHTML=h;pb.style.width=(s/Q.length*100)+"%";
+var nx=document.getElementById("nx");
+function sel(v){ans[s]=v;nx.disabled=false}
+if(ans[s]!=null){nx.disabled=false}
+[].forEach.call(qc.querySelectorAll(".opt"),function(b){if(ans[s]==b.dataset.v)b.classList.add("on");
+b.onclick=function(){[].forEach.call(qc.querySelectorAll(".opt"),function(x){x.classList.remove("on")});b.classList.add("on");sel(b.dataset.v)}});
+var st=[].slice.call(qc.querySelectorAll(".stars span"));
+function paint(v){st.forEach(function(x,i){x.classList.toggle("on",i<v)})}
+if(ans[s]!=null&&Q[s].stars)paint(+ans[s]);
+st.forEach(function(x){x.onclick=function(){paint(+x.dataset.v);sel(x.dataset.v)}});
+var bk=document.getElementById("bk");if(bk)bk.onclick=function(){s--;render()};
+nx.onclick=function(){if(s<Q.length-1){s++;render()}else send()}}
+function send(){pb.style.width="100%";qc.innerHTML='<div class="wait"><div class="sp"></div>Đang gửi câu trả lời của bạn...</div>';
+setTimeout(function(){var o=document.getElementById("sv");o.classList.add("out");setTimeout(function(){o.style.display="none"},750)},1700)}
+render()})();
 </script>
 </body>
 </html>
